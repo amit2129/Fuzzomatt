@@ -1,0 +1,22 @@
+The architecture of the fuzzer will be as follows
+
+C functions will be called and their resources will be stored and used later, good and bad values shall be used.
+The method for writing an interface for the fuzzer will be for each function declaring its resources and values, resources are important values that which without them the following functions would be meaningless.
+
+In order to generate the next best system calls a priority queue will be used, weights will be given based on several factors which will most likely be extended but currently my thoughts are:
+
+1. resource chaining.
+2. probability 
+3. least recently used calls will get a higher score.
+4. coverage (if possible).
+5. let's see if we can score them based on a machine learning model.
+6. mutation of an existing sequence, possible mutations are removing or replacing a function call in the chain.
+
+
+The priority will initially be dumb and costly but will be extended to be a fibonnaci tree.
+
+
+The internal structure will be similar to syzkaller in that a process will be executing function calls in chains using the simple loop of generating a function call and at first it will be limited to several functions
+
+
+initial functions will be abstractions for function pointers and resource maintenance
