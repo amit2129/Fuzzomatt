@@ -1,0 +1,56 @@
+function definitions in the fuzzer should denote which arguments are in, which are out, which are a resource
+which is necessarily of a certain type and their order.
+
+arguments should also have default values which can be queried from a default value database perhaps.
+a function declaration should therfore, define the following:
+1. an enumeration of the input arguments
+for each enumerated input arguments a direction and resource_type should be used.
+to minimize the declaration of resources, basic resources such as ints and size_ts should have predefined constants which are interesting, this should be done per function.
+
+A macro should define the function call and separate macros can define the argument attributes.
+
+The usages of arguments to functions are:
+	1. a regular input variable, nothing about it is modified
+	2. an input variable which is consumed and cannot be used again (a pointer being freed for example)
+	3. an input pointer through which a value is returned
+	4. an input pointer which the function modifies
+
+// enum argUsage { reg_input=1, consumed, output_ptr, modify_mem);
+
+an argument to a specific function can 1, 2, 3, 4, 3|4
+
+
+The source of arguments can be from:
+	1. a random value
+	2. a predefined bad value
+	3. a resource which was previously created and is taken from the resource array.
+
+// enum argSource { bad_val=1, rand_val, resource);
+
+Choosing a source is done at random from the possible options with weights given.
+The default value of this is "random value";
+
+
+I'll show a conversion of a regular function to a fuzzing supported function;
+
+
+<return_type> <function_name>(<arg_type1> <arg1>, <arg_type2> <arg2>...) {
+	// implementation
+}
+
+The fuzzing supported version would be:
+
+void fuzzer_<function_name>(FuzzerContext *context, int *return_code) {
+	ArgTypeLL * arg_type_cursor = context->arg_type_ll;
+	<arg_type1> <arg1> = *(<arg_type1> *)context->get_arg(arg_type_cursor, context);
+	arg_type_cursor = arg_type_cursor->next;
+	<arg_type2> <arg2> = *(<arg_type2> *)context->get_arg(arg_type_cursor, context);
+	.
+	.
+	.
+	*return_code = <function_name>(<arg1>, <arg2>...);
+}
+
+after the function runs an introspection needs to be performed, did it run succesfully? if yes
+then we can assume out outputs are valid and our inputs need to be added to a sequence of valid inputs?
+we need to free the resources we created which were directed in to the function;
