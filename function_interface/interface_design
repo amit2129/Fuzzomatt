@@ -54,3 +54,7 @@ void fuzzer_<function_name>(FuzzerContext *context, int *return_code) {
 after the function runs an introspection needs to be performed, did it run succesfully? if yes
 then we can assume out outputs are valid and our inputs need to be added to a sequence of valid inputs?
 we need to free the resources we created which were directed in to the function;
+
+
+
+

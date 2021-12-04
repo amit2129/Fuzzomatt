@@ -1,0 +1,28 @@
+The system structure of the fuzzer is comprised of two parts essentially, the scheduler and the executor.
+
+Scheduler:
+	The scheduler controls function sequence and argument sources, it deals in the conceptual creation/destruction of reasources, the insertion of good/bad inputs to functions but it doesn't contain any logic regarding specific values.
+	The input to the scheduler is the current context which contains the last schedule outputed by the scheduler and a function dependency graph, the output of the scheduler is a new schedule which can be a modification of the original or a new completely different schedule.
+
+	The schedule is responsible for the logic of the fuzzing and it is the brain, making informed decisions on which functions to schedule and with which inputs.
+
+The Scheduler in blocks:
+	1. initial scheduling will be: randomize all the things.
+
+
+Executor:
+	The executor performs the complex task of running a sequence of functions completely generically while also linking their arguments again generically. It also needs handle the various possible failures and report to the fuzzer when that happs. The sequence of functions and arguments could be called a thread.
+
+Executor in blocks:
+	1. A generic method to call functions and pass arguments/receive outputs from them. The scheduler provides the executor with instructions on how to operate the functions so it needn't even know how many arguments a function takes prior to tackling it's execution.
+	2. An argument passing system, at each stage of the executors current thread an intermediary state of resources must be known in order to build upon the previous stages.
+	3. An argument aggregator which can create a full declarative thread of the execution for debugging the fuzzer and for creating reproduction scripts.
+
+
+Reproducer:
+	The reproducer takes a snapshot produced by the executor and converts it into a c file which contains a reproducing example
+	 
+
+
+The communication between the scheduler and the executor will be in the following structure:
+	The scheduler outputs a linked list of execution "stages", each stage contains the current function and the source of the arguments for the fuctions.
