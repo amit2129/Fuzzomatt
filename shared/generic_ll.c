@@ -1,6 +1,7 @@
 #include <generic_ll.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void destroy_ll(LinkedList **head_ptr, void (*free_data)(void *data)) {
 	LinkedList *cursor;
@@ -15,7 +16,7 @@ void destroy_ll(LinkedList **head_ptr, void (*free_data)(void *data)) {
 	if (cursor->next)
 		destroy_ll(&cursor->next, free_data);
 
-	free_data(cursor->data);
+	if (free_data) {free_data(cursor->data); }
 	free(cursor);
 }
 
@@ -27,7 +28,7 @@ int create_node(LinkedList **node_return, void *data) {
 	(*node_return)->next = NULL;
 }
 
-int insert_value(LinkedList **head_ptr, void *data) {
+int ll_insert_value(LinkedList **head_ptr, void *data) {
 	LinkedList *cursor = *head_ptr;
 	if (!cursor) {
 		int ret = create_node(head_ptr, data);
@@ -54,7 +55,6 @@ int remove_elem(LinkedList **head_ptr, LinkedList *node, int (*comparator)(Linke
 		if (free_data) {free_data(cursor->data);}
 		*head_ptr = cursor->next;
 		free(cursor);
-		printf("57\n");
 		return 0;
 	}
 	prev = cursor;
@@ -90,16 +90,17 @@ void print_ll(LinkedList *head, void (*print_func)(void *data)) {
 
 void test_ll() {
 	printf("************** testing linked list *************\n");
-	LinkedList **ll =(LinkedList **) malloc(sizeof(LinkedList *));
+	LinkedList *ll_v = NULL;
+	LinkedList **ll = &ll_v;
 	*ll = NULL;
 	int a = 0;
 	int b = 1;
 	int c = 2;
 	int d = 3;
-	insert_value(ll, &a);
-	insert_value(ll, &b);
-	insert_value(ll, &c);
-	insert_value(ll, &d);
+	ll_insert_value(ll, &a);
+	ll_insert_value(ll, &b);
+	ll_insert_value(ll, &c);
+	ll_insert_value(ll, &d);
 	LinkedList *first = *ll;
 	printf("return: %d\n", remove_data(ll, &a, compare_int, NULL));
 	printf("return: %d\n", remove_data(ll, &a, compare_int, NULL));
@@ -109,7 +110,7 @@ void test_ll() {
 
 }
 
-int main() {
-	test_ll();
-	return 0;
-}
+//int main() {
+//	test_ll();
+//	return 0;
+//}
